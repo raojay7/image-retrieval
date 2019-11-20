@@ -17,6 +17,7 @@ class VGGNet:
         self.weight = 'imagenet'
         self.pooling = 'max'
         self.model = VGG16(weights = self.weight, input_shape = (self.input_shape[0], self.input_shape[1], self.input_shape[2]), pooling = self.pooling, include_top = False)
+        #特征抽取可以改变全连接层
         self.model.predict(np.zeros((1, 224, 224 , 3)))
 
     '''
@@ -28,6 +29,7 @@ class VGGNet:
         img = image.img_to_array(img)
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
+        self.model.summary()
         feat = self.model.predict(img)
         norm_feat = feat[0]/LA.norm(feat[0])
         return norm_feat
