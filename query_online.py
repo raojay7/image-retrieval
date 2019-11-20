@@ -36,30 +36,30 @@ print("--------------------------------------------------")
 # read and show query image
 queryDir = args["query"]
 queryImg = mpimg.imread(queryDir)
-plt.title("Query Image")
-plt.imshow(queryImg)
-plt.show()
+# plt.title("Query Image")
+# plt.imshow(queryImg)
+# plt.show()
 
 # init VGGNet16 model
 model = VGGNet()
 
-# extract query image's feature, compute simlarity score and sort
+# extract query image's feature, compute simlarity score and sort 余弦相似度这里可能有问题
 queryVec = model.extract_feat(queryDir)
 scores = np.dot(queryVec, feats.T)
 rank_ID = np.argsort(scores)[::-1]
 rank_score = scores[rank_ID]
-#print rank_ID
-#print rank_score
+print (rank_ID)
+print (rank_score)
 
 
 # number of top retrieved images to show
-maxres = 3
-imlist = [imgNames[index] for i,index in enumerate(rank_ID[0:maxres])]
+maxres = 5
+imlist = [imgNames[index].decode() for i,index in enumerate(rank_ID[0:maxres])]
 print("top %d images in order are: " %maxres, imlist)
 
 # show top #maxres retrieved result one by one
-for i,im in enumerate(imlist):
-    image = mpimg.imread(args["result"]+"/"+str(im, 'utf-8'))
-    plt.title("search output %d" %(i+1))
-    plt.imshow(image)
-    plt.show()
+# for i,im in enumerate(imlist):
+#     image = mpimg.imread(args["result"]+"/"+str(im, 'utf-8'))
+#     plt.title("search output %d" %(i+1))
+#     plt.imshow(image)
+#     plt.show()

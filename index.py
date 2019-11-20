@@ -44,8 +44,10 @@ if __name__ == "__main__":
         img_name = os.path.split(img_path)[1]
         feats.append(norm_feat)
         names.append(img_name)
+        print(img_name)
         print("extracting feature from image No. %d , %d images in total" %((i+1), len(img_list)))
 
+    # print(names)
     feats = np.array(feats)
     # print(feats)
     # directory for storing extracted features
@@ -58,6 +60,6 @@ if __name__ == "__main__":
 
     h5f = h5py.File(output, 'w')
     h5f.create_dataset('dataset_1', data = feats)
-    # h5f.create_dataset('dataset_2', data = names)
+    # h5f.create_dataset('dataset_2', data = names) 会报错
     h5f.create_dataset('dataset_2', data = np.string_(names))
     h5f.close()
