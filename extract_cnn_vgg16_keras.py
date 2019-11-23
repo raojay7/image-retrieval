@@ -7,7 +7,7 @@ from numpy import linalg as LA
 from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
-
+from keras.models import Model
 class VGGNet:
     def __init__(self):
         # weights: 'imagenet'
@@ -16,9 +16,14 @@ class VGGNet:
         self.input_shape = (224, 224, 3)
         self.weight = 'imagenet'
         self.pooling = 'max'
+
+        #include_top = False表示只需要卷积层，但是我这里需要测试全连接所以include为true
         self.model = VGG16(weights = self.weight, input_shape = (self.input_shape[0], self.input_shape[1], self.input_shape[2]), pooling = self.pooling, include_top = False)
-        #特征抽取可以改变全连接层
-        self.model.predict(np.zeros((1, 224, 224 , 3)))
+        # self.basemodel = VGG16(weights=self.weight,)
+        #特征抽取可以改变全连接层，暂时没用
+        # self.model = Model(input=self.basemodel.input,
+        #                    outputs=self.basemodel.get_layer('fc1').output)
+        self.model.predict(np.zeros((1, 224, 224, 3)))
 
     '''
     Use vgg16 model to extract features
@@ -29,7 +34,6 @@ class VGGNet:
         img = image.img_to_array(img)
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
-        self.model.summary()
         feat = self.model.predict(img)
         norm_feat = feat[0]/LA.norm(feat[0])
         return norm_feat
