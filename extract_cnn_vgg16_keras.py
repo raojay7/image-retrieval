@@ -35,5 +35,6 @@ class VGGNet:
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
         feat = self.model.predict(img)
+        # print("------"+str(feat.shape[0])+"-----"+str(feat.shape[1]))
         norm_feat = feat[0]/LA.norm(feat[0])
         return norm_feat
