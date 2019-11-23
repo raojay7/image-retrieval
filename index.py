@@ -4,6 +4,7 @@ import os
 import h5py
 import numpy as np
 import argparse
+from sklearn.decomposition import PCA
 
 from extract_cnn_vgg16_keras import VGGNet
 
@@ -28,6 +29,7 @@ def get_imlist(path):
 '''
 if __name__ == "__main__":
 
+
     db = args["database"]
     img_list = get_imlist(db)
     
@@ -49,7 +51,13 @@ if __name__ == "__main__":
 
     # print(names)
     feats = np.array(feats)
-    # print(feats)
+
+    #pca
+    # pca = PCA(n_components=2048,svd_solver='auto')
+    # feats=pca.fit_transform(feats)
+
+    print(feats.shape[0])
+    print(feats.shape[1])
     # directory for storing extracted features
     output = args["index"]
     
