@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # Author: yongyuan.name
 import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import h5py
 import numpy as np
 import argparse
-from sklearn.decomposition import PCA
+
 
 from extract_cnn_vgg16_keras import VGGNet
 
@@ -46,15 +48,13 @@ if __name__ == "__main__":
         img_name = os.path.split(img_path)[1]
         feats.append(norm_feat)
         names.append(img_name)
-        print(img_name)
+        # print(img_name)
         print("extracting feature from image No. %d , %d images in total" %((i+1), len(img_list)))
 
     # print(names)
     feats = np.array(feats)
 
-    #pca
-    # pca = PCA(n_components=2048,svd_solver='auto')
-    # feats=pca.fit_transform(feats)
+
 
     print(feats.shape[0])
     print(feats.shape[1])

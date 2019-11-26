@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: yongyuan.name
-
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import numpy as np
 from numpy import linalg as LA
 
@@ -18,11 +20,11 @@ class VGGNet:
         self.pooling = 'max'
 
         #include_top = False表示只需要卷积层，但是我这里需要测试全连接所以include为true
-        self.model = VGG16(weights = self.weight, input_shape = (self.input_shape[0], self.input_shape[1], self.input_shape[2]), pooling = self.pooling, include_top = False)
-        # self.basemodel = VGG16(weights=self.weight,)
+        # self.model = VGG16(weights = self.weight, input_shape = (self.input_shape[0], self.input_shape[1], self.input_shape[2]), pooling = self.pooling, include_top = False)
+        self.basemodel = VGG16(weights=self.weight,)
         #特征抽取可以改变全连接层，暂时没用
-        # self.model = Model(input=self.basemodel.input,
-        #                    outputs=self.basemodel.get_layer('fc1').output)
+        self.model = Model(input=self.basemodel.input,
+                           outputs=self.basemodel.get_layer('fc1').output)
         self.model.predict(np.zeros((1, 224, 224, 3)))
 
     '''
