@@ -87,5 +87,5 @@ python query_online.py -query database/001_accordion_image_0001.jpg -index featu
 - ss L=3+FC1 L2+PCA+whiten 512D 0.87072
 - ss L=3+FC1 L2+PCA+whiten+L2 512D 0.86818
 
-
+测试文件
 注意数据库内的名字要按字符串顺序排序
