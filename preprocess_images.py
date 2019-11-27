@@ -14,7 +14,7 @@ def get_imlist(path):
     return [os.path.join(path,f) for f in os.listdir(path) if f.endswith('.jpg')]
 #配置
 db="./database/"
-L=2 #改变L来得到不同的空间layer
+L=4 #改变L来得到不同的空间layer
 
 
 
@@ -71,6 +71,6 @@ for i, img_path in enumerate(img_list):
                     yend=ymax
 
                 cropImg=image[ystart:yend,xstart:xend]
-                cv2.imwrite("database1/"+img_name+"_"+str(i-1)+str(j-1)+".jpg",cropImg) #保存到指定目录00左上，01左下10右上，11右下
+                cv2.imwrite("database3/"+img_name+"_"+str(i-1)+str(j-1)+".jpg",cropImg) #保存到指定目录00左上，01左下10右上，11右下
 
 print("process ok")
