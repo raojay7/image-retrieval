@@ -69,7 +69,6 @@ for i, img_path in enumerate(img_list):
                     xend=xmax
                 if(yend>ymax):
                     yend=ymax
-
                 cropImg=image[ystart:yend,xstart:xend]
                 cv2.imwrite("database3/"+img_name+"_"+str(i-1)+str(j-1)+".jpg",cropImg) #保存到指定目录00左上，01左下10右上，11右下
 

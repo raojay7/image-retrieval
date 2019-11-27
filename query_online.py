@@ -51,7 +51,6 @@ rank_score = scores[rank_ID]
 print (rank_ID)
 print (rank_score)
 
-
 # number of top retrieved images to show
 maxres = 5
 imlist = [imgNames[index].decode() for i,index in enumerate(rank_ID[0:maxres])]

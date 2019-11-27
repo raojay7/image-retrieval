@@ -9,7 +9,6 @@ import fnmatch
 import shutil
 import random
 import math
-
 query_number_percent = 0.5 # 设置每类拿百分之多少出来作为查询
 
 directory = "database"  # 设置新路径

@@ -10,7 +10,6 @@ import argparse
 
 from extract_cnn_vgg16_keras import VGGNet
 
-
 ap = argparse.ArgumentParser()
 ap.add_argument("-database", required = True,
 	help = "Path to database which contains images to be indexed")

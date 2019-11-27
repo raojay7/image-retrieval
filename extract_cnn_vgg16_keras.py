@@ -10,6 +10,7 @@ from keras.applications.vgg16 import VGG16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
 from keras.models import Model
+
 class VGGNet:
     def __init__(self):
         # weights: 'imagenet'

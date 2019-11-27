@@ -15,8 +15,6 @@ totalSubOfLayer=L*L
 querySize=500
 datasetSize=1491 #原始数据库大小
 def getResult(query,feats,imgNames):
-
-
     #不用输入模型重复计算
     queryVec=feats[imgNames.tolist().index(np.string_(query))]
     print(queryVec)
