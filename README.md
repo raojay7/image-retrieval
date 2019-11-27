@@ -2,18 +2,15 @@
 
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](../LICENSE)
 
-## 演示
-
-[演示地址](http://202.120.39.161:55555/)(不能访问，没钱续VPS了)，跑在CPU上，web界面采用的[SoTu](https://github.com/willard-yuan/SoTu)
 
 ## 环境
 
 ```python
 In [1]: import keras
-Using Theano backend.
+Using Tensorflow backend.
 ```
 
-keras 2.0.1 及 2.0.5 版本均经过测试可用。推荐Python 2.7，支持Python 3.6.
+keras 2.2.2版本经过测试可用。推荐Python 3.5.
 
 此外需要numpy, matplotlib, os, h5py, argparse. 推荐使用anaconda安装
 
@@ -34,7 +31,16 @@ keras 2.0.1 及 2.0.5 版本均经过测试可用。推荐Python 2.7，支持Pyt
 ├── query_online.py 库内搜索
 └── README.md
 ```
+- 步骤三
 
+如果使用空间搜索，首先使用`preprocess_images.py`进行处理，生成原图的子块；
+
+再利用步骤一继续抽取相应的子图特征
+
+- 步骤四
+
+利用`compute_MAP.py`，改变layrer和数据库即可得到map计算文件`resultfile.dat`，格式可参照
+[holiday数据集](http://lear.inrialpes.fr/people/jegou/data.php)，最后使用holiday的eval工具计算
 #### 示例
 
 ```sh
@@ -46,11 +52,6 @@ python query_online.py -query database/001_accordion_image_0001.jpg -index featu
 ```
 
 
-### 更新
-
-- 针对近期有小伙伴反映的keras版本的问题，已将其进行到最新版本，并且特征提取代码大幅精简。
-- 显示检索得到的图片， 可自由定义查询图片及检索图片集
-
 ### Goal
 
 - [x] 重新用flask写web界面，已完成。
@@ -61,8 +62,9 @@ python query_online.py -query database/001_accordion_image_0001.jpg -index featu
 
 ### 问题汇总
 
-- `query_online.py` line 28报错，将`index.py` line 62注释，使用line 61.
+- `query_online.py` line 28报错，将`index.py` line 62注释，使用line 61.需要传入numpy的数组
 
+### holiday实验结果
 - baseline 4096 FC1 0.71168
 - 4096 FC2 0.69602
 - FC1 PCA 1024D 0.74283
@@ -87,4 +89,6 @@ python query_online.py -query database/001_accordion_image_0001.jpg -index featu
 - ss L=3+FC1 L2+PCA+whiten 512D 0.87072
 - ss L=3+FC1 L2+PCA+whiten+L2 512D 0.86818
 
-注意数据库内的名字要按字符串顺序排序
+
+### 注意事项
+- 数据库内的名字要按字符串顺序排序
