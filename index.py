@@ -8,8 +8,8 @@ import numpy as np
 import argparse
 
 
-from extract_cnn_vgg16_keras import VGGNet
-
+from extract_cnn_keras import VGGNet
+from extract_cnn_keras import ResNet
 ap = argparse.ArgumentParser()
 ap.add_argument("-database", required = True,
 	help = "Path to database which contains images to be indexed")
@@ -42,7 +42,8 @@ if __name__ == "__main__":
     feats = []
     names = []
 
-    model = VGGNet()
+    # model = VGGNet()
+    model=ResNet()
     for i, img_path in enumerate(img_list):
         norm_feat = model.extract_feat(img_path)
         img_name = os.path.split(img_path)[1]
