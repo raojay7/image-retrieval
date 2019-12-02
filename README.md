@@ -66,6 +66,9 @@ python query_online.py -query database/001_accordion_image_0001.jpg -index featu
 
 ### holiday实验结果
 - baseline 4096 FC1 0.71168
+
+- CON3 512 
+
 - 4096 FC2 0.69602
 - FC1 PCA 1024D 0.74283
 - FC1 PCA+whiten 1024D 0.61104
