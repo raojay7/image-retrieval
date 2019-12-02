@@ -9,8 +9,8 @@ from sklearn import preprocessing
 
 #参数配置
 baseImageName="featureCNN.h5"
-featurename="featureCNN1.h5"
-L=2
+featurename="featureCNN2.h5"
+L=3
 totalSubOfLayer=L*L
 querySize=500
 datasetSize=1491 #原始数据库大小
@@ -43,15 +43,7 @@ def getLayerResult(query,feats,imgNames,baseimgNames):
             # 计算每个子图的feature分数
             subPatchName = img_name + "_" + str(i) + str(j) + ".jpg"
             queryVec = feats[imgNames.tolist().index(np.string_(subPatchName))]
-            print(queryVec.shape)
             scores = np.dot(queryVec, feats.T)
-            print("scores:"+subPatchName)
-            print(scores[:1000])
-            # print(scores[1000:2000])
-            # print(scores[2000:3000])
-            # print(scores[3000:4000])
-            # print(scores[4000:5000])
-            # print(scores[5000:])
 
 
             max=float('-inf') #未做归一化，值的范围要这样设置
@@ -71,13 +63,12 @@ def getLayerResult(query,feats,imgNames,baseimgNames):
         ave/=totalSubOfLayer
         finalScore.append(ave)
 
-    print(finalScore)
+
     npfinalScore=np.array(finalScore)
     #再次计算分数
     rank_ID = np.argsort(npfinalScore)[::-1]
-    print(rank_ID)
     rank_score = npfinalScore[rank_ID]
-    print(rank_score)
+
 
     # number of top retrieved images to show
     maxres = 10
@@ -111,9 +102,6 @@ def writeResult():
 
         imgNames = h5f['dataset_2'][:]  # 这里是带后缀的裁剪图片
 
-
-        # print(imgNames[:1000])
-        # print(imgNames[1000:])
 
         baseImageNames=h5fbase['dataset_2'][:]
 
