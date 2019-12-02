@@ -9,8 +9,8 @@ from sklearn import preprocessing
 
 #参数配置
 baseImageName="featureCNN.h5"
-featurename="featureCNN2.h5"
-L=3
+featurename="featureCNN3.h5"
+L=4
 totalSubOfLayer=L*L
 querySize=500
 datasetSize=1491 #原始数据库大小
@@ -83,7 +83,7 @@ def postProcess(feats):
     pca = PCA(n_components=500, svd_solver='auto', whiten=True)
     feats = pca.fit_transform(feats)
     # l2renorm
-    preprocessing.normalize(feats, norm='l2')
+    feats=preprocessing.normalize(feats, norm='l2')
     return feats
 
 #等待解决bug顺序不一致
