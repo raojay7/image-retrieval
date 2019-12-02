@@ -9,21 +9,19 @@ from sklearn import preprocessing
 
 #参数配置
 baseImageName="featureCNN.h5"
-featurename="featureCNN2.h5"
-L=3
+featurename="featureCNN1.h5"
+L=2
 totalSubOfLayer=L*L
 querySize=500
 datasetSize=1491 #原始数据库大小
 def getResult(query,feats,imgNames):
     #不用输入模型重复计算
     queryVec=feats[imgNames.tolist().index(np.string_(query))]
-    print(queryVec)
     scores = np.dot(queryVec, feats.T)
-    # print(scores)
+
     rank_ID = np.argsort(scores)[::-1]
     rank_score = scores[rank_ID]
-    # print(rank_ID)
-    # print(rank_score)
+
 
     # number of top retrieved images to show
     maxres = 10
@@ -91,7 +89,7 @@ def postProcess(feats):
     # 在这里正则
     # l2norm之前已经进行了一次
     # pca
-    pca = PCA(n_components=512, svd_solver='auto', whiten=True)
+    pca = PCA(n_components=500, svd_solver='auto', whiten=True)
     feats = pca.fit_transform(feats)
     # l2renorm
     preprocessing.normalize(feats, norm='l2')
@@ -107,10 +105,10 @@ def writeResult():
         h5f = h5py.File(featurename, 'r')
         h5fbase = h5py.File(baseImageName, 'r')
         feats = h5f['dataset_1'][:]
-        print(feats.shape)
 
         #进行后处理
         feats=postProcess(feats)
+
         imgNames = h5f['dataset_2'][:]  # 这里是带后缀的裁剪图片
 
 
