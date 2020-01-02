@@ -158,6 +158,6 @@ def writeResult():
             for j in range(len(resultList)):
                 f.write(str(j)+" ")
                 f.write(resultList[j]+" ")
-            f.write("\r\n")
+            f.write("\n")
 
 writeResult()

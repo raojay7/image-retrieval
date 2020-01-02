@@ -6,10 +6,10 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
 
-featurename1="oxford_vgg.h5"
-featurename2="oxford_vgg1.h5"
-featurename3="oxford_vgg2.h5"
-featurename4="oxford_vgg3.h5"
+featurename1="oxbuildtest_0.h5"
+featurename2="oxbuildtest_1.h5"
+featurename3="oxbuildtest_2.h5"
+featurename4="oxbuildtest_3.h5"
 
 #6392 paris
 datasetSize=5063 #原始数据库大小
@@ -22,16 +22,13 @@ def postProcess(feats):
     # pca
     pca = PCA(n_components=512, svd_solver='auto', whiten=True)
     # 使用oxford来训练
-    h5f = h5py.File("oxford_vgg.h5", 'r')
+    h5f = h5py.File("paris_vgg19_3.h5", 'r')
     feat_train = h5f['dataset_1'][:]
     pca.fit_transform(feat_train)
     feats = pca.transform(feats)
-    h5f.close()
+    # h5f.close()
     # l2renorm
     feats=preprocessing.normalize(feats, norm='l2')
-    #a signed component wise power transform,use dimension of the feature vector to the power of 2.
-    # for i in range(len(feats)):
-    #     feats[i]=np.sign(feats[i])*pow(feats[i],2)
     return feats
 
 # 实现得到数据库的vector
@@ -44,6 +41,14 @@ feats1 = h5f1['dataset_1'][:]
 feats2 = h5f2['dataset_1'][:]
 feats3 = h5f3['dataset_1'][:]
 feats4 = h5f4['dataset_1'][:]
+print(feats1)
+print("---------")
+print(feats2)
+print("---------")
+print(feats3)
+print("---------")
+print(feats4)
+
 
 # 进行后处理
 # feats1 = postProcess(feats1)
@@ -90,12 +95,12 @@ def getResult(query,feats,imgNames):
     # number of top retrieved images to show
     maxres = datasetSize
     imlist = [imgNames[index].decode() for i, index in enumerate(rank_ID[0:maxres])]
-    # print("top %d images in order are: " % maxres, imlist)
+    print("top %d images in order are: " % maxres, imlist[0:10])
     return imlist
 
 # def getLayerScore(Lr,Lq,query,rfeats,qfeats,qimgNames):
 #
-#     if Lr==1 & Lq==1:
+#     if Lr==1 and Lq==1:
 #         queryVec = qfeats[qimgNames.tolist().index(np.string_(query))]
 #         npfinalScore = np.dot(queryVec, rfeats.T)
 #         return npfinalScore
@@ -138,14 +143,21 @@ def getResult(query,feats,imgNames):
 def getImageScore(Lr,Lq,query):
     subScores=[]
     for i in range(1,Lq+1):
+    # for i in range(Lq, Lq + 1):
         if i==1:
-            subScores.append(getsubqueryScore(Lr, query, getLayerFeats(i), getLayerImgNames(i)))
+            npfinalScore=getsubqueryScore(Lr, query, getLayerFeats(i), getLayerImgNames(i))
+            for item in range(datasetSize):
+                npfinalScore[item]=npfinalScore[item]*(pow(Lr-i+1,4))
+            subScores.append(npfinalScore)
             continue
         img_name = os.path.splitext(query)[0]
         for j in range(i):
             for k in range(i):
                 subPatchName = img_name + "_" + str(j) + str(k) + ".jpg"
-                subScores.append(getsubqueryScore(Lr, subPatchName, getLayerFeats(i), getLayerImgNames(i)))
+                npfinalScore=getsubqueryScore(Lr, subPatchName, getLayerFeats(i), getLayerImgNames(i))
+                for item in range(datasetSize):
+                    npfinalScore[item] = npfinalScore[item]*(pow(Lr-i+1,4))
+                subScores.append(npfinalScore)
     finalScore=[0.0,]*datasetSize
     for i in range(datasetSize):
         for j in range(len(subScores)):
@@ -213,7 +225,7 @@ def getResultList(npfinalScore,baseimgNames):
 
     # number of top retrieved images to show
     imlist = [baseimgNames[index].decode() for i, index in enumerate(rank_ID[0:])]
-    # print("top %d images in order are: " % datasetSize, imlist)
+    print("top %d images in order are: " % datasetSize, imlist[0:10])
     return imlist
 
 
@@ -253,7 +265,7 @@ def writeResult():
             # resultList=getResult(querynames[i]+".jpg",feats1,imgNames1)
             finalscore=[]
 
-            resultList=getResultList(getImageScore(1,1,oxford_querynames[i]+".jpg"),getLayerImgNames(1))
+            resultList=getResultList(getImageScore(4,1,oxford_querynames[i]+".jpg"),getLayerImgNames(1))
             for j in range(len(resultList)):
                 if j==0: continue
                 f.write(resultList[j].split(".")[0]+"\n")

@@ -11,7 +11,7 @@ from extract_cnn_vgg16_keras_old import VGGNet
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-database", required=True,
-                help="Path to database which contains images to be indexed")
+                help="Path to holiday which contains images to be indexed")
 ap.add_argument("-index", required=True,
                 help="Name of index file")
 args = vars(ap.parse_args())
