@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
+import time
 import numpy as np
 import h5py
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
+from utils.general import htime
 
-
-featurename1="oxbuildtest_0.h5"
-featurename2="oxbuildtest_1.h5"
-featurename3="oxbuildtest_2.h5"
-featurename4="oxbuildtest_3.h5"
+featurename1="../mytest.h5"
+featurename2="../gem_res_ox_2.h5"
+featurename3="../gem_res_ox_3.h5"
+featurename4="../gem_res_ox_1.h5"
 
 #6392 paris
 datasetSize=5063 #原始数据库大小
@@ -20,9 +21,9 @@ def postProcess(feats):
     # 在这里正则
     # l2norm之前已经进行了一次
     # pca
-    pca = PCA(n_components=512, svd_solver='auto', whiten=True)
+    pca = PCA(n_components=2048, svd_solver='auto', whiten=True)
     # 使用oxford来训练
-    h5f = h5py.File("paris_vgg19_3.h5", 'r')
+    h5f = h5py.File("gem_res_paris_1.h5", 'r')
     feat_train = h5f['dataset_1'][:]
     pca.fit_transform(feat_train)
     feats = pca.transform(feats)
@@ -41,13 +42,15 @@ feats1 = h5f1['dataset_1'][:]
 feats2 = h5f2['dataset_1'][:]
 feats3 = h5f3['dataset_1'][:]
 feats4 = h5f4['dataset_1'][:]
-print(feats1)
-print("---------")
-print(feats2)
-print("---------")
-print(feats3)
-print("---------")
-print(feats4)
+# print("---------feats1---------")
+# print(feats1.shape)
+# print("---------feats2---------")
+# print(feats2)
+# print("---------feats3---------")
+# print(feats3)
+# print("---------feats4---------")
+# print(feats4)
+
 
 
 # 进行后处理
@@ -98,56 +101,14 @@ def getResult(query,feats,imgNames):
     print("top %d images in order are: " % maxres, imlist[0:10])
     return imlist
 
-# def getLayerScore(Lr,Lq,query,rfeats,qfeats,qimgNames):
-#
-#     if Lr==1 and Lq==1:
-#         queryVec = qfeats[qimgNames.tolist().index(np.string_(query))]
-#         npfinalScore = np.dot(queryVec, rfeats.T)
-#         return npfinalScore
-#
-#     scoresList = []  # 得到query图片的分数向量
-#     finalScore = []
-#     totalSubOfLayer=Lq*Lq
-#     for k in range(totalSubOfLayer):
-#         scoresList.append([])  # 每个子分数的大小都是原始分数的1/L*L
-#     img_name = os.path.splitext(query)[0]
-#
-#     now = 0
-#     for i in range(Lq):
-#         for j in range(Lq):
-#             # 计算每个子图的feature分数
-#             subPatchName = img_name + "_" + str(i) + str(j) + ".jpg"
-#             queryVec = qfeats[qimgNames.tolist().index(np.string_(subPatchName))]
-#             scores = np.dot(queryVec, rfeats.T)
-#
-#             max = float('-inf')  # 未做归一化，值的范围要这样设置
-#             for k in range(len(scores)):
-#                 # 取subpatch的最大值
-#                 if (max < scores[k]):
-#                     max = scores[k]
-#                 if ((k + 1) % totalSubOfLayer == 0):
-#                     scoresList[now].append(max)
-#                     max = float('-inf')
-#             now = now + 1
-#     # 计算sum值，放入原始数据集合大小的列表中
-#     for i in range(datasetSize):
-#         sum = 0.0
-#         for j in range(totalSubOfLayer):
-#             sum += scoresList[j][i]
-#         sum /= totalSubOfLayer #测试sum
-#         finalScore.append(sum)
-#     npfinalScore = np.array(finalScore)
-#     return npfinalScore
-
 
 def getImageScore(Lr,Lq,query):
     subScores=[]
     for i in range(1,Lq+1):
-    # for i in range(Lq, Lq + 1):
         if i==1:
             npfinalScore=getsubqueryScore(Lr, query, getLayerFeats(i), getLayerImgNames(i))
             for item in range(datasetSize):
-                npfinalScore[item]=npfinalScore[item]*(pow(Lr-i+1,4))
+                npfinalScore[item]=npfinalScore[item]*(pow(Lr-i+1,1))
             subScores.append(npfinalScore)
             continue
         img_name = os.path.splitext(query)[0]
@@ -156,33 +117,17 @@ def getImageScore(Lr,Lq,query):
                 subPatchName = img_name + "_" + str(j) + str(k) + ".jpg"
                 npfinalScore=getsubqueryScore(Lr, subPatchName, getLayerFeats(i), getLayerImgNames(i))
                 for item in range(datasetSize):
-                    npfinalScore[item] = npfinalScore[item]*(pow(Lr-i+1,4))
+                    #改变子块权重
+                    npfinalScore[item] = npfinalScore[item]*(pow(Lr-i+1,1))
                 subScores.append(npfinalScore)
     finalScore=[0.0,]*datasetSize
     for i in range(datasetSize):
         for j in range(len(subScores)):
             #相加
             finalScore[i]+=subScores[j][i]
-        # finalScore[i]=finalScore[i]/len(subScores)
+        finalScore[i]=finalScore[i]#/len(subScores)
     return np.array(finalScore)
 
-# def EuclideanDistance(x, y):
-#     """
-#     get the Euclidean Distance between to matrix
-#     (x-y)^2 = x^2 + y^2 - 2xy
-#     :param x:
-#     :param y:
-#     :return:
-#     """
-#     (rowx, colx) = x.shape
-#     (rowy, coly) = y.shape
-#     if colx != coly:
-#         raise RuntimeError('colx must be equal with coly')
-#     xy = np.dot(x, y.T)
-#     x2 = np.repeat(np.reshape(np.sum(np.multiply(x, x), axis=1), (rowx, 1)), repeats=rowy, axis=1)
-#     y2 = np.repeat(np.reshape(np.sum(np.multiply(y, y), axis=1), (rowy, 1)), repeats=rowx, axis=1).T
-#     dis = x2 + y2 - 2 * xy
-#     return dis
 # 得到query图片的当前子块分数向量
 def getsubqueryScore(Lr,subquery,qfeats,qimgNames):
     finalScore = []
@@ -193,7 +138,6 @@ def getsubqueryScore(Lr,subquery,qfeats,qimgNames):
         # 计算每个查询图的最小feature分数
         queryVec = qfeats[qimgNames.tolist().index(np.string_(subquery))]
         scores = np.dot(queryVec, getLayerFeats(i).T)
-        # scores=EuclideanDistance(queryVec.reshape(1,-1),getLayerFeats(i))[0]
 
         max = float('-inf')  # 未做归一化，值的范围要这样设置
         #重设分数
@@ -259,14 +203,17 @@ def writeResult():
         "paris_sacrecoeur_000162", "paris_sacrecoeur_000417", "paris_sacrecoeur_000237", "paris_sacrecoeur_000586","paris_sacrecoeur_000437",
         "paris_triomphe_000369", "paris_triomphe_000016", "paris_triomphe_000135", "paris_triomphe_000149","paris_defense_000038",
     ]
+    start = time.time()
+    print("eval start:")
     for i in range(querysize):
         with open("ranked_"+str(i+1)+".txt", "w", encoding='utf-8') as f:
             print(oxford_querynames[i])
             # resultList=getResult(querynames[i]+".jpg",feats1,imgNames1)
             finalscore=[]
-
-            resultList=getResultList(getImageScore(4,1,oxford_querynames[i]+".jpg"),getLayerImgNames(1))
+            resultList=getResultList(getImageScore(1,1,oxford_querynames[i]+".jpg"),getLayerImgNames(1))
             for j in range(len(resultList)):
-                if j==0: continue
                 f.write(resultList[j].split(".")[0]+"\n")
+    print('>>: total time: {}'.format(htime(time.time() - start)))
+
+
 writeResult()

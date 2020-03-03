@@ -17,7 +17,6 @@ from keras.preprocessing import image
 from keras.applications.vgg19 import preprocess_input
 from keras.models import Model
 import tensorflow as tf
-
 import keras_applications
 from RoiPooling import  RoiPooling
 # #不加这几行就报错
@@ -67,8 +66,9 @@ class VGGNet:
         # input_shape: (width, height, 3), width and height should >= 48
         #改变输入的大小
         self.input_shape = (600, 600, 3)
+        # self.input_shape = (None, None, 3)
         self.weight = 'imagenet'
-        self.pooling = 'None'
+        self.pooling = 'max'
 
         #include_top = False表示只需要卷积层，但是我这里需要测试全连接所以include为true
         self.model = VGG19(weights = self.weight, input_shape = (self.input_shape[0], self.input_shape[1], self.input_shape[2]), pooling = self.pooling, include_top = False)
@@ -82,17 +82,16 @@ class VGGNet:
     Use vgg16 model to extract features
     Output normalized feature vector
     '''
-    def extract_feat(self, img_path,regions):
+    def extract_feat(self, img_path):
         img = image.load_img(img_path, target_size=(self.input_shape[0], self.input_shape[1]))
         img = image.img_to_array(img)
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
         feat = self.model.predict(img)
-        # to do 在这里之后可能需要把target_size变了
-        # print(feat[0].shape)
-        roi_pooled = RoiPooling(mode="tf").get_pooled_rois(feat[0], regions)
-        # roi_pooled=roi_pooled/LA.norm(roi_pooled)
+        print(type(feat))
 
-        # norm_feat = feat[0]/LA.norm(feat[0])
-        return roi_pooled.reshape(len(regions)*512)
+        print(feat.shape)
+        # print("------"+str(feat.shape[0])+"-----"+str(feat.shape[1]))
+        norm_feat = feat[0] / LA.norm(feat[0])
+        return norm_feat
 
