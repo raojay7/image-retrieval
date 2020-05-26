@@ -64,33 +64,7 @@ python query_online.py -query database/001_accordion_image_0001.jpg -index featu
 
 - `query_online.py` line 28报错，将`index.py` line 62注释，使用line 61.需要传入numpy的数组
 
-### holiday实验结果
-- baseline 4096 FC1 0.71168
 
-- CON3 512 
-
-- 4096 FC2 0.69602
-- FC1 PCA 1024D 0.74283
-- FC1 PCA+whiten 1024D 0.61104
-
-
-- FC1 L2+PCA+L2 500D 0.74284
-- FC1 L2+PCA+whiten+L2 500D 0.74240
-
-- FC1 PCA 500D 0.74455 
-- FC1 PCA+whiten 500D 0.76414
-
-- FC1 PCA 512D 0.74638 
-- FC1 PCA+whiten 512D 0.76320
-
-- FC1 PCA 256D 0.71868
-- FC1 PCA+whiten 256D 0.75560
-- FC1 L2+PCA+whiten+L2 256D 0.75600
-
-- ss L=2+FC1 4096 0.78555
-- ss L=3+FC1 4096 0.81077
-- ss L=3+FC1 L2+PCA+whiten 512D 0.87072
-- ss L=3+FC1 L2+PCA+whiten+L2 512D 0.86818
 
 ### 注意事项
 - 数据库内的名字要按字符串顺序排序
