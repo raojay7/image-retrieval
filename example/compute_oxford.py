@@ -6,15 +6,15 @@ import h5py
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 from utils.general import htime
-
-featurename1="../mytest.h5"
-featurename2="../gem_res_ox_2.h5"
-featurename3="../gem_res_ox_3.h5"
+import cv2
+featurename1="../gem_res_paris_1.h5"
+featurename2="../gem_res_paris_2.h5"
+featurename3="../gem_res_paris_3.h5"
 featurename4="../gem_res_ox_1.h5"
 
 #6392 paris
-datasetSize=5063 #原始数据库大小
-# datasetSize=6392 #原始数据库大小
+# datasetSize=5063 #原始数据库大小
+datasetSize=6392 #原始数据库大小
 querysize=55
 
 def postProcess(feats):
@@ -23,7 +23,7 @@ def postProcess(feats):
     # pca
     pca = PCA(n_components=2048, svd_solver='auto', whiten=True)
     # 使用oxford来训练
-    h5f = h5py.File("gem_res_paris_1.h5", 'r')
+    h5f = h5py.File("../gem_res_ox_1.h5", 'r')
     feat_train = h5f['dataset_1'][:]
     pca.fit_transform(feat_train)
     feats = pca.transform(feats)
@@ -54,10 +54,10 @@ feats4 = h5f4['dataset_1'][:]
 
 
 # 进行后处理
-# feats1 = postProcess(feats1)
-# feats2 = postProcess(feats2)
-# feats3 = postProcess(feats3)
-# feats4 = postProcess(feats4)
+feats1 = postProcess(feats1)
+feats2 = postProcess(feats2)
+feats3 = postProcess(feats3)
+feats4 = postProcess(feats4)
 
 # 这里是带后缀的裁剪图片
 imgNames1 = h5f1['dataset_2'][:]
@@ -108,7 +108,7 @@ def getImageScore(Lr,Lq,query):
         if i==1:
             npfinalScore=getsubqueryScore(Lr, query, getLayerFeats(i), getLayerImgNames(i))
             for item in range(datasetSize):
-                npfinalScore[item]=npfinalScore[item]*(pow(Lr-i+1,1))
+                npfinalScore[item]=npfinalScore[item]*Lr
             subScores.append(npfinalScore)
             continue
         img_name = os.path.splitext(query)[0]
@@ -118,7 +118,7 @@ def getImageScore(Lr,Lq,query):
                 npfinalScore=getsubqueryScore(Lr, subPatchName, getLayerFeats(i), getLayerImgNames(i))
                 for item in range(datasetSize):
                     #改变子块权重
-                    npfinalScore[item] = npfinalScore[item]*(pow(Lr-i+1,1))
+                    npfinalScore[item] = npfinalScore[item]
                 subScores.append(npfinalScore)
     finalScore=[0.0,]*datasetSize
     for i in range(datasetSize):
@@ -173,6 +173,30 @@ def getResultList(npfinalScore,baseimgNames):
     return imlist
 
 
+import cv2
+import matplotlib.pyplot as plt
+
+# 使用matplotlib展示多张图片
+def matplotlib_multi_pic1(imgs,name):
+    for i in range(len(imgs)):
+        img = cv2.imread(imgs[i])
+
+        b, g, r = cv2.split(img)
+        img2 = cv2.merge([r, g, b])
+        #行，列，索引
+        plt.subplot(10,9,i+1)
+        plt.imshow(img2)
+        plt.title("",fontsize=8)
+        plt.rcParams['figure.dpi'] = 600  # 分辨率
+        plt.rcParams['savefig.dpi'] = 600  # 图片像素
+        plt.xticks([])
+        plt.yticks([])
+        plt.savefig('E:\\PycharmProjects\\image-retrieval\\result\\'+str(name)+'.png')
+    # plt.show()
+
+
+
+
 def writeResult():
 
 
@@ -205,14 +229,25 @@ def writeResult():
     ]
     start = time.time()
     print("eval start:")
+    imgs = []
     for i in range(querysize):
-        with open("ranked_"+str(i+1)+".txt", "w", encoding='utf-8') as f:
-            print(oxford_querynames[i])
+        with open("E:/PycharmProjects/image-retrieval/result/ranked_"+str(i+1)+".txt", "w", encoding='utf-8') as f:
+            print(paris_querynames[i])
             # resultList=getResult(querynames[i]+".jpg",feats1,imgNames1)
             finalscore=[]
-            resultList=getResultList(getImageScore(1,1,oxford_querynames[i]+".jpg"),getLayerImgNames(1))
+            resultList=getResultList(getImageScore(3,1,paris_querynames[i]+".jpg"),getLayerImgNames(1))
+
             for j in range(len(resultList)):
-                f.write(resultList[j].split(".")[0]+"\n")
+                name=resultList[j].split(".")[0]
+                f.write(name+"\n")
+                #展示图片前11个
+                if(j<9):
+                    imgs.append("E:\\PycharmProjects\\image-retrieval\\data\\test\\rparis6k\\jpg\\"+name+".jpg")
+        if i==9:
+            matplotlib_multi_pic1(imgs,"paris")
+
+
+
     print('>>: total time: {}'.format(htime(time.time() - start)))
 
 

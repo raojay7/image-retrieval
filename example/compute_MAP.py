@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: yongyuan.name
+
 
 import os
 import numpy as np

@@ -24,7 +24,7 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-
+from utils.get_featuremap import visualize_feature_map
 
 class ResNet:
     def __init__(self):
@@ -68,7 +68,7 @@ class VGGNet:
         self.input_shape = (600, 600, 3)
         # self.input_shape = (None, None, 3)
         self.weight = 'imagenet'
-        self.pooling = 'max'
+        self.pooling = 'None'
 
         #include_top = False表示只需要卷积层，但是我这里需要测试全连接所以include为true
         self.model = VGG19(weights = self.weight, input_shape = (self.input_shape[0], self.input_shape[1], self.input_shape[2]), pooling = self.pooling, include_top = False)
@@ -88,6 +88,10 @@ class VGGNet:
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
         feat = self.model.predict(img)
+
+        feature = feat.reshape(feat.shape[1:])
+
+        visualize_feature_map(feature)
         print(type(feat))
 
         print(feat.shape)

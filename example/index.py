@@ -5,7 +5,7 @@ import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import h5py
 import numpy as np
-
+from extract_cnn_keras import VGGNet
 from extract_cnn_keras import ResNet
 # ap = argparse.ArgumentParser()
 # ap.add_argument("-database", required = True,
@@ -28,7 +28,7 @@ def get_imlist(path):
 '''
 if __name__ == "__main__":
 
-    img_list=get_imlist("ox3")
+    img_list=get_imlist("../test")
     print("--------------------------------------------------")
     print("         feature extraction starts")
     print("--------------------------------------------------")
@@ -36,8 +36,8 @@ if __name__ == "__main__":
     feats = []
     names = []
 
-    # model = VGGNet()
-    model=ResNet()
+    model = VGGNet()
+    # model=ResNet()
     for i, img_path in enumerate(img_list):
         norm_feat = model.extract_feat(img_path)
         img_name = os.path.split(img_path)[1]
@@ -49,24 +49,26 @@ if __name__ == "__main__":
         print("extracting feature from image No. %d , %d images in total" % ((i + 1), len(img_list)))
 
     # print(names)
-    feats = np.array(feats)
 
-
-
-    # directory for storing extracted features
-    # output = args["index"]
-    output="oxbuildtest_4.h5"
-    print("--------------------------------------------------")
-    print("      writing feature extraction results"+ "...")
-    print("--------------------------------------------------")
-
-
-    h5f = h5py.File(output, 'w')
-    # print(feats[i])
-    h5f.create_dataset('dataset_1', data = feats)
-    # print("feats:")
-    # print(np.array(feats[i]).shape)
-    # h5f.create_dataset('dataset_2', data = names) 会报错
-
-    h5f.create_dataset('dataset_2', data = np.string_(names))
-    h5f.close()
+    #test feature map
+    # feats = np.array(feats)
+    #
+    #
+    #
+    # # directory for storing extracted features
+    # # output = args["index"]
+    # output="test.h5"
+    # print("--------------------------------------------------")
+    # print("      writing feature extraction results"+ "...")
+    # print("--------------------------------------------------")
+    #
+    #
+    # h5f = h5py.File(output, 'w')
+    # # print(feats[i])
+    # h5f.create_dataset('dataset_1', data = feats)
+    # # print("feats:")
+    # # print(np.array(feats[i]).shape)
+    # # h5f.create_dataset('dataset_2', data = names) 会报错
+    #
+    # h5f.create_dataset('dataset_2', data = np.string_(names))
+    # h5f.close()

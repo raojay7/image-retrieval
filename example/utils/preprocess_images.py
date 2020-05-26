@@ -60,8 +60,8 @@ def mac_regions(W, H, L,featuremap_h):
 
 def get_subimages():
     #配置
-    db="./oxbuild_images/"
-    # db="./paris/"
+    db="E:/PycharmProjects/image-retrieval/data/test/roxford5k/jpg/"
+    # db="E:/PycharmProjects/image-retrieval/data/test/rparis6k/jpg"
     L=3 #改变L来得到不同的空间layer
 
 
@@ -107,7 +107,7 @@ def get_subimages():
                     if(yend>ymax):
                         yend=ymax
                     cropImg=image[ystart:yend,xstart:xend]
-                    cv2.imwrite("ox2/"+img_name+"_"+str(i-1)+str(j-1)+".jpg",cropImg) #保存到指定目录00左上，01左下10右上，11右下
+                    cv2.imwrite("E:/PycharmProjects/image-retrieval/ox2/"+img_name+"_"+str(i-1)+str(j-1)+".jpg",cropImg) #保存到指定目录00左上，01左下10右上，11右下
 
     print("process ok")
 
