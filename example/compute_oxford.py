@@ -7,23 +7,23 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 from utils.general import htime
 import cv2
-featurename1="../gem_res_paris_1.h5"
-featurename2="../gem_res_paris_2.h5"
-featurename3="../gem_res_paris_3.h5"
+featurename1="ox0.h5"
+featurename2="ox1.h5"
+featurename3="ox2.h5"
 featurename4="../gem_res_ox_1.h5"
 
 #6392 paris
-# datasetSize=5063 #原始数据库大小
-datasetSize=6392 #原始数据库大小
+datasetSize=5063 #原始数据库大小
+# datasetSize=6392 #原始数据库大小
 querysize=55
 
 def postProcess(feats):
     # 在这里正则
     # l2norm之前已经进行了一次
     # pca
-    pca = PCA(n_components=2048, svd_solver='auto', whiten=True)
+    pca = PCA(n_components=512, svd_solver='auto', whiten=True)
     # 使用oxford来训练
-    h5f = h5py.File("../gem_res_ox_1.h5", 'r')
+    h5f = h5py.File("paris2.h5", 'r')
     feat_train = h5f['dataset_1'][:]
     pca.fit_transform(feat_train)
     feats = pca.transform(feats)
@@ -42,10 +42,10 @@ feats1 = h5f1['dataset_1'][:]
 feats2 = h5f2['dataset_1'][:]
 feats3 = h5f3['dataset_1'][:]
 feats4 = h5f4['dataset_1'][:]
-# print("---------feats1---------")
-# print(feats1.shape)
-# print("---------feats2---------")
-# print(feats2)
+print("---------feats1---------")
+print(feats1.shape)
+print("---------feats2---------")
+print(feats2.shape)
 # print("---------feats3---------")
 # print(feats3)
 # print("---------feats4---------")
@@ -57,7 +57,7 @@ feats4 = h5f4['dataset_1'][:]
 feats1 = postProcess(feats1)
 feats2 = postProcess(feats2)
 feats3 = postProcess(feats3)
-feats4 = postProcess(feats4)
+# feats4 = postProcess(feats4)
 
 # 这里是带后缀的裁剪图片
 imgNames1 = h5f1['dataset_2'][:]
@@ -108,6 +108,7 @@ def getImageScore(Lr,Lq,query):
         if i==1:
             npfinalScore=getsubqueryScore(Lr, query, getLayerFeats(i), getLayerImgNames(i))
             for item in range(datasetSize):
+                #权重
                 npfinalScore[item]=npfinalScore[item]*Lr
             subScores.append(npfinalScore)
             continue
@@ -118,7 +119,7 @@ def getImageScore(Lr,Lq,query):
                 npfinalScore=getsubqueryScore(Lr, subPatchName, getLayerFeats(i), getLayerImgNames(i))
                 for item in range(datasetSize):
                     #改变子块权重
-                    npfinalScore[item] = npfinalScore[item]
+                    npfinalScore[item] = npfinalScore[item]#*(pow(Lr-i+1,1))
                 subScores.append(npfinalScore)
     finalScore=[0.0,]*datasetSize
     for i in range(datasetSize):
@@ -232,19 +233,20 @@ def writeResult():
     imgs = []
     for i in range(querysize):
         with open("E:/PycharmProjects/image-retrieval/result/ranked_"+str(i+1)+".txt", "w", encoding='utf-8') as f:
-            print(paris_querynames[i])
+            print(oxford_querynames[i])
             # resultList=getResult(querynames[i]+".jpg",feats1,imgNames1)
             finalscore=[]
-            resultList=getResultList(getImageScore(3,1,paris_querynames[i]+".jpg"),getLayerImgNames(1))
+            resultList=getResultList(getImageScore(3,3,oxford_querynames[i]+".jpg"),getLayerImgNames(1))
 
+        #展示图片
             for j in range(len(resultList)):
                 name=resultList[j].split(".")[0]
                 f.write(name+"\n")
                 #展示图片前11个
-                if(j<9):
-                    imgs.append("E:\\PycharmProjects\\image-retrieval\\data\\test\\rparis6k\\jpg\\"+name+".jpg")
-        if i==9:
-            matplotlib_multi_pic1(imgs,"paris")
+                # if(j<9):
+                #     imgs.append("E:\\PycharmProjects\\image-retrieval\\data\\test\\roxford6k\\jpg\\"+name+".jpg")
+        # if i==9:
+        #     matplotlib_multi_pic1(imgs,"paris")
 
 
 

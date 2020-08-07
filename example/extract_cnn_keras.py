@@ -18,7 +18,7 @@ from keras.applications.vgg19 import preprocess_input
 from keras.models import Model
 import tensorflow as tf
 import keras_applications
-from RoiPooling import  RoiPooling
+import utils.RoiPooling as roi
 # #不加这几行就报错
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -65,7 +65,7 @@ class VGGNet:
         # pooling: 'max' or 'avg'
         # input_shape: (width, height, 3), width and height should >= 48
         #改变输入的大小
-        self.input_shape = (600, 600, 3)
+        self.input_shape = (600,600, 3)
         # self.input_shape = (None, None, 3)
         self.weight = 'imagenet'
         self.pooling = 'None'
@@ -82,20 +82,38 @@ class VGGNet:
     Use vgg16 model to extract features
     Output normalized feature vector
     '''
-    def extract_feat(self, img_path):
+    # def extract_feat(self, img_path):
+    #     img = image.load_img(img_path, target_size=(self.input_shape[0], self.input_shape[1]))
+    #     img = image.img_to_array(img)
+    #     img = np.expand_dims(img, axis=0)
+    #     img = preprocess_input(img)
+    #     feat = self.model.predict(img)
+    #
+    #     # feature = feat.reshape(feat.shape[1:])
+    #     # img_name = os.path.split(img_path)[1]
+    #     # visualize_feature_map(feature,img_name+'4000')
+    #     print(type(feat))
+    #
+    #     print(feat.shape)
+    #     # print("------"+str(feat.shape[0])+"-----"+str(feat.shape[1]))
+    #     norm_feat = feat[0] / LA.norm(feat[0])
+    #     return norm_feat
+
+    def extract_feat(self, img_path,regions):
         img = image.load_img(img_path, target_size=(self.input_shape[0], self.input_shape[1]))
         img = image.img_to_array(img)
         img = np.expand_dims(img, axis=0)
         img = preprocess_input(img)
         feat = self.model.predict(img)
 
-        feature = feat.reshape(feat.shape[1:])
-
-        visualize_feature_map(feature)
         print(type(feat))
-
         print(feat.shape)
+        roi_pools=roi.RoiPooling().get_pooled_rois(feat,regions)
+        print(roi_pools.shape)
+
         # print("------"+str(feat.shape[0])+"-----"+str(feat.shape[1]))
         norm_feat = feat[0] / LA.norm(feat[0])
-        return norm_feat
+        for i in range(len(regions)):
+            roi_pools[i]=roi_pools[i][0]/LA.norm(roi_pools[i][0])
+        return roi_pools
 

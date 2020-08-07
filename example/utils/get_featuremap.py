@@ -10,8 +10,8 @@ def get_row_col(num_pic):
     return row, col
 
 
-def visualize_feature_map(img_batch):
-    feature_map = np.squeeze(img_batch, axis=0)
+def visualize_feature_map(img_batch,name):
+    feature_map = img_batch
     print(feature_map.shape)
 
     feature_map_combination = []
@@ -26,13 +26,11 @@ def visualize_feature_map(img_batch):
         plt.subplot(row, col, i + 1)
         plt.imshow(feature_map_split)
         axis('off')
-        title('feature_map_{}'.format(i))
 
-    plt.savefig('feature_map.png')
+    plt.savefig('feature_map_'+name+'.png')
     plt.show()
 
     # 各个特征图按1：1 叠加
     feature_map_sum = sum(ele for ele in feature_map_combination)
     plt.imshow(feature_map_sum)
-    plt.savefig("feature_map_sum.png")
-
+    plt.savefig("feature_map_sum_"+name+".png")

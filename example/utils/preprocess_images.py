@@ -25,9 +25,10 @@ def mac_regions(W, H, L,featuremap_h):
     ymax = int(h)
     for every in range(1,L+1):
         if every==1 :
-            R = np.array([ymin, xmin, ymax, xmax], dtype=np.int)
-            R=R * featuremap_h / H
-            regions.append(R)
+            continue
+            # R = np.array([ymin, xmin, ymax, xmax], dtype=np.int)
+            # R=R * featuremap_h / H
+            # regions.append(R)
         for l in range(2,every+1):
             wl = (2 * w) / (l + 1)
             hl = (2 * h) / (l + 1)
@@ -111,4 +112,14 @@ def get_subimages():
 
     print("process ok")
 
-get_subimages()
+# get_subimages()
+
+
+if __name__ == "__main__":
+    # regions=mac_regions(1024,1024,2,32)
+    # print(regions)
+    for j in range(2):
+        for k in range(2):
+            print("img_name--------")
+            subimage_name = "a" + str(j) + str(k)
+            print(subimage_name)
